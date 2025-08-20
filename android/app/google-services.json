@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "29616264988",
+    "project_id": "bytesbox-1582b",
+    "storage_bucket": "bytesbox-1582b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29616264988:android:a4513b95cdaad35fbbccd9",
+        "android_client_info": {
+          "package_name": "com.hk_1309.bytebox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "29616264988-3gh9o40phj8l8vbgk75l5rojrk27s9et.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hk_1309.bytebox",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "29616264988-947lj253f2053q5v2vi4uhvrongma49i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrT54OfN9wlCmWZc_94VwOMhB-5TPQQjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "29616264988-947lj253f2053q5v2vi4uhvrongma49i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

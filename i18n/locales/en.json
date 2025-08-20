@@ -1,0 +1,36 @@
+{
+  "tabs": {
+    "chat": "Chat",
+    "request": "Request",
+    "settings": "Settings"
+  },
+  "users": {
+    "title": "Users",
+    "search": "Search users",
+    "empty": "No user found",
+    "request": "Request",
+    "requested": "Requested",
+    "friends": "Friends"
+  },
+  "request": {
+    "received": "Received",
+    "sent": "Sent",
+    "declined": "Declined",
+    "empty": "No Request found"
+  },
+  "chat": {
+    "empty": "No chats",
+    "type": "Type a message",
+    "send": "Send",
+    "online": "Online",
+    "offline": "Offline",
+    "last_seen": "Last seen {{time}}"
+  },
+  "settings": {
+    "logout": "Logout"
+  },
+  "common": {
+    "loading_fetch": "Please wait while we are fetching the data",
+    "loading_auth": "Please Wait while we are authenticating"
+  }
+}
