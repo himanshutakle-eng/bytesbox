@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/Colors";
+import { Colors as color, Colors } from "@/constants/Colors";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { fontSize, height, width } from "@/utils/Mixings";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,13 +22,9 @@ const CustomTabBar = ({
   const { colors, isDark } = useThemeContext();
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
+
   return (
-    <View
-      style={[
-        styles.tabBar,
-        { backgroundColor: isDark ? colors.background : colors.background },
-      ]}
-    >
+    <View style={[styles.tabBar, { backgroundColor: color.light.background }]}>
       {state.routes.map((item, index) => {
         const { options } = descriptors[item.key];
 
@@ -56,6 +52,21 @@ const CustomTabBar = ({
           ? Colors[colorScheme ?? "light"].tabActive
           : Colors[colorScheme ?? "light"].tabInactive;
 
+        const routeName = item.name;
+        const iconName =
+          routeName === "chatlist"
+            ? "chatbubble-outline"
+            : routeName === "request"
+            ? "notifications-outline"
+            : "settings-outline";
+
+        const translatedLabel =
+          routeName === "chatlist"
+            ? t("tabs.chat")
+            : routeName === "request"
+            ? t("tabs.request")
+            : t("tabs.settings");
+
         return (
           <TouchableOpacity
             onPress={onPress}
@@ -65,24 +76,8 @@ const CustomTabBar = ({
             style={styles.btn}
             key={item.key}
           >
-            <Ionicons
-              name={
-                label === "Chat"
-                  ? "chatbubble-outline"
-                  : label === "Request"
-                  ? "notifications-outline"
-                  : "settings-outline"
-              }
-              size={20}
-              color={color}
-            />
-            <Text style={[styles.txt, { color }]}>
-              {label === "Chat"
-                ? t("tabs.chat")
-                : label === "Request"
-                ? t("tabs.request")
-                : t("tabs.settings")}
-            </Text>
+            <Ionicons name={iconName} size={20} color={color} />
+            <Text style={[styles.txt, { color }]}>{translatedLabel}</Text>
           </TouchableOpacity>
         );
       })}

@@ -4,11 +4,12 @@ import { usePresence } from "@/hooks/usePresence";
 import { Message } from "@/Types";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
+  Image,
   Text,
   TextInput,
   TouchableOpacity,
@@ -27,6 +28,7 @@ const ChatView = ({ otherUser }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const formatTime = (ts: any) => {
     try {
       const d = ts?.toDate ? ts.toDate() : ts ? new Date(ts) : null;
@@ -38,6 +40,50 @@ const ChatView = ({ otherUser }: Props) => {
   };
 
   usePresence();
+
+  // Configure header with avatar, name, and presence
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+          {otherUser?.profileUrl ? (
+            <Image
+              source={{ uri: otherUser.profileUrl }}
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+            />
+          ) : (
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: "#777",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                {(otherUser?.userName || otherUser?.email || "?").slice(0, 1)}
+              </Text>
+            </View>
+          )}
+          <View>
+            <Text style={{ fontWeight: "700" }}>
+              {otherUser?.userName || otherUser?.email || ""}
+            </Text>
+            <Text style={{ fontSize: 11, opacity: 0.75 }}>
+              {otherUser?.status === "online"
+                ? t("chat.online")
+                : t("chat.last_seen", {
+                    time: formatTime(otherUser?.lastSeen),
+                  })}
+            </Text>
+          </View>
+        </View>
+      ),
+      headerBackTitleVisible: false,
+    });
+  }, [otherUser]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -85,47 +131,6 @@ const ChatView = ({ otherUser }: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          padding: 12,
-          gap: 12,
-        }}
-      >
-        <View
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            overflow: "hidden",
-            backgroundColor: "#ccc",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {otherUser?.profileUrl ? (
-            // We avoid importing Image to keep header lightweight; avatar initial fallback is shown otherwise
-            <Text />
-          ) : (
-            <Text style={{ color: colors.textPrimary, fontWeight: "700" }}>
-              {(otherUser?.userName || otherUser?.email || "?").slice(0, 1)}
-            </Text>
-          )}
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: colors.textPrimary, fontWeight: "700" }}>
-            {otherUser?.userName || otherUser?.email || ""}
-          </Text>
-          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
-            {otherUser?.status === "online"
-              ? t("chat.online")
-              : t("chat.last_seen", { time: formatTime(otherUser?.lastSeen) })}
-          </Text>
-        </View>
-      </View>
-
       <FlatList
         inverted
         data={messages}
@@ -195,8 +200,8 @@ const ChatView = ({ otherUser }: Props) => {
             borderRadius: 8,
           }}
         />
-        <TouchableOpacity onPress={send} style={{ padding: 12 }}>
-          <Text>{t("chat.send")}</Text>
+        <TouchableOpacity onPress={send} style={styles.sendButton}>
+          <Text style={styles.sendButtonText}>{t("chat.send")}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -36,7 +36,10 @@ function InnerLayout() {
         <Stack.Screen name="authentication" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="users" options={{ headerShown: false }} />
-        <Stack.Screen name="chat" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="chat"
+          options={{ headerShown: true, headerTitle: "" }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style={isDark ? "light" : "dark"} />

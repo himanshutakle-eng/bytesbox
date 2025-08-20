@@ -3,6 +3,7 @@ import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
 import { router } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
@@ -20,6 +21,7 @@ function formatTime(ts: any) {
 
 const ChatItem = ({ item }: Props) => {
   const { isDark, colors } = useThemeContext();
+  const { t } = useTranslation();
 
   const name =
     item?.otherUser?.userName ||
@@ -68,7 +70,9 @@ const ChatItem = ({ item }: Props) => {
           </Text>
         ) : (
           <Text style={{ color: colors.textSecondary }}>
-            {item?.otherUser?.status === "online" ? "Online" : "Offline"}
+            {item?.otherUser?.status === "online"
+              ? t("chat.online")
+              : t("chat.offline")}
           </Text>
         )}
       </View>
