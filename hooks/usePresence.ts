@@ -1,16 +1,16 @@
-import auth from "@react-native-firebase/auth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import firestore from "@react-native-firebase/firestore";
 import { useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
 export function usePresence() {
   const appState = useRef<AppStateStatus>(AppState.currentState);
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    const uid = auth().currentUser?.uid;
-    if (!uid) return;
+    if (!user?.uid) return;
 
-    const userRef = firestore().collection("users").doc(uid);
+    const userRef = firestore().collection("users").doc(user.uid);
 
     // Mark online on mount
     userRef.set(

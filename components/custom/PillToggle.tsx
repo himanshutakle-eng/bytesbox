@@ -21,6 +21,7 @@ const PillToggle = ({ options, value, onChange }: Props) => {
         borderRadius: 999,
         alignSelf: "center",
         marginVertical: 12,
+        elevation: 3,
       }}
     >
       {options.map((opt) => {

@@ -1,6 +1,6 @@
 import CustomLoader from "@/components/ui/CustomLoader";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { User } from "@/Types";
-import { getAuth } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
@@ -16,6 +16,7 @@ const Component = (props: Props) => {
   const [requestLoading, setRequestLoading] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const { t } = useTranslation();
+  const { user } = useAuthContext();
 
   const { user: userScreen } = useLocalSearchParams();
 
@@ -26,16 +27,16 @@ const Component = (props: Props) => {
   const getAllUsersExceptCurrent = async () => {
     setLoading(true);
     try {
-      const currentUser: any = getAuth().currentUser;
-      if (!currentUser) {
+      if (!user?.uid) {
         console.warn("no current user loggedIn !");
+        return;
       }
 
       const snapshot = await firestore().collection("users").get();
 
       const fetchedUsers: User[] = snapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() } as User))
-        .filter((user) => user.id !== currentUser.uid);
+        .filter((user) => user.id !== user.uid);
       setLoading(false);
       setUsers(fetchedUsers);
     } catch (error) {
@@ -90,14 +91,11 @@ const Component = (props: Props) => {
   const sendRequest = async (toUserId: string) => {
     setRequestLoading(true);
     try {
-      const auth = getAuth();
-      const fromUserId = auth.currentUser?.uid;
-
-      if (!fromUserId || fromUserId === toUserId) return;
+      if (!user?.uid || user.uid === toUserId) return;
 
       const batch = firestore().batch();
 
-      const fromRef = firestore().collection("users").doc(fromUserId);
+      const fromRef = firestore().collection("users").doc(user.uid);
       const toRef = firestore().collection("users").doc(toUserId);
 
       batch.update(fromRef, {
@@ -110,7 +108,7 @@ const Component = (props: Props) => {
 
       batch.update(toRef, {
         connections: firestore.FieldValue.arrayUnion({
-          uid: fromUserId,
+          uid: user.uid,
           status: "pending",
           direction: "incoming",
         }),

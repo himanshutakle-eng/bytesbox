@@ -1,41 +1,20 @@
-import {
-  FirebaseAuthTypes,
-  getAuth,
-  onAuthStateChanged,
-} from "@react-native-firebase/auth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Splash from "./View";
 
 const Component = () => {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
-  const [initializing, setInitializing] = useState(true);
+  const { user, loading } = useAuthContext();
 
   useEffect(() => {
-    const subscriber = onAuthStateChanged(getAuth(), (usr) => {
-      setUser(usr);
-      if (initializing) setInitializing(false);
-    });
-    return subscriber;
-  }, [initializing]);
-
-  useEffect(() => {
-    if (initializing) return;
+    if (loading) return;
 
     if (user) {
       router.replace("/(tabs)/chatlist");
     } else {
       router.replace("/authentication");
     }
-  }, [user, initializing]);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     router.replace("/authentication");
-  //   }, 2000);
-
-  //   return () => clearTimeout(timer);
-  // }, []);
+  }, [user, loading]);
 
   return <Splash />;
 };

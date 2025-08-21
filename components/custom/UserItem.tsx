@@ -126,9 +126,9 @@
 //   },
 // });
 
+import { useAuthContext } from "@/contexts/AuthContext";
 import { width } from "@/utils/Mixings";
 import Entypo from "@expo/vector-icons/Entypo";
-import { getAuth } from "@react-native-firebase/auth";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -152,8 +152,8 @@ const UserItem = ({
   onDecline,
 }: Props) => {
   const { t } = useTranslation();
-  const currentUser = getAuth().currentUser;
-  const currentUid = currentUser?.uid;
+  const { user } = useAuthContext();
+  const currentUid = user?.uid;
 
   const existingRequest = item?.connections?.find(
     (conn: any) => conn.uid === currentUid || conn.uid === item.id

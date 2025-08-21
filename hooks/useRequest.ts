@@ -1,4 +1,4 @@
-import { getAuth } from "@react-native-firebase/auth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import firestore from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -8,10 +8,10 @@ export function useConnections() {
   const [acceptedConnections, setAcceptedConnections] = useState<any[]>([]);
   const [declinedConnections, setDeclinedConnections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    const currentUid = getAuth().currentUser?.uid;
-    if (!currentUid) return;
+    if (!user?.uid) return;
 
     const fetchUser = async (uid: string) => {
       const userSnap = await firestore().collection("users").doc(uid).get();
@@ -20,7 +20,7 @@ export function useConnections() {
 
     const unsubscribe = firestore()
       .collection("users")
-      .doc(currentUid)
+      .doc(user.uid)
       .onSnapshot(async (doc) => {
         if (!doc.exists) return;
 
@@ -59,14 +59,14 @@ export function useConnections() {
         const acceptedWithUser = await Promise.all(
           accepted.map(async (c: any) => ({
             ...c,
-            user: await fetchUser(c.uid === currentUid ? c.toUserId : c.uid),
+            user: await fetchUser(c.uid === user.uid ? c.toUserId : c.uid),
           }))
         );
 
         const declinedWithUser = await Promise.all(
           declined.map(async (c: any) => ({
             ...c,
-            user: await fetchUser(c.uid === currentUid ? c.toUserId : c.uid),
+            user: await fetchUser(c.uid === user.uid ? c.toUserId : c.uid),
           }))
         );
 

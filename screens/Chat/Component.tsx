@@ -1,5 +1,5 @@
+import { useAuthContext } from "@/contexts/AuthContext";
 import { User } from "@/Types";
-import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -8,17 +8,17 @@ import ChatView from "./View";
 const Component = () => {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
   const [otherUser, setOtherUser] = useState<User | null>(null);
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId || !user?.uid) return;
     const run = async () => {
       const chat = await firestore()
         .collection("chats")
         .doc(String(chatId))
         .get();
       const parts: string[] = chat.data()?.participants || [];
-      const me = auth().currentUser?.uid;
-      const otherUid = parts.find((p) => p !== me) || parts[0];
+      const otherUid = parts.find((p) => p !== user.uid) || parts[0];
       if (!otherUid) return;
       const unsub = firestore()
         .collection("users")
@@ -36,7 +36,7 @@ const Component = () => {
     return () => {
       if (cleanup) cleanup();
     };
-  }, [chatId]);
+  }, [chatId, user?.uid]);
 
   return <ChatView otherUser={otherUser} />;
 };

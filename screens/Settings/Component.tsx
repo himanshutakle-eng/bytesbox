@@ -1,21 +1,15 @@
+import { useAuthContext } from "@/contexts/AuthContext";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { router, useNavigation } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Settings from "./View";
 
 type Props = {};
 
 const Component = (props: Props) => {
   const navigation = useNavigation();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    (async () => {
-      const currentUser = await GoogleSignin.getCurrentUser();
-      setUser(currentUser);
-    })();
-  }, []);
+  const { userData } = useAuthContext();
 
   const handleLogout = async () => {
     try {
@@ -32,7 +26,7 @@ const Component = (props: Props) => {
     }
   };
 
-  return <Settings handleLogout={handleLogout} user={user.user} />;
+  return <Settings handleLogout={handleLogout} user={userData} />;
 };
 
 export default Component;

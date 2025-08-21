@@ -2,17 +2,21 @@ import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import styles from "./Styles";
 
 type Props = {
   handleLogout: () => Promise<void>;
-  user: any;
+  user: {
+    userName?: string;
+    email?: string;
+    profileUrl?: string;
+  } | null;
 };
 
 const Settings = ({ handleLogout, user }: Props) => {
   const { t, i18n } = useTranslation();
-  const { themeMode, setThemeMode, isDark, colors } = useThemeContext();
+  const { themeMode, setThemeMode, colors } = useThemeContext();
 
   return (
     <View
@@ -21,11 +25,12 @@ const Settings = ({ handleLogout, user }: Props) => {
         { backgroundColor: colors.background, paddingHorizontal: width(0.03) },
       ]}
     >
+      {/* Profile Card */}
       <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
         <View style={styles.profileImageContainer}>
-          {user?.photoURL ? (
+          {user?.profileUrl ? (
             <Image
-              source={{ uri: user.photoURL }}
+              source={{ uri: user.profileUrl }}
               style={styles.profileImage}
             />
           ) : (
@@ -36,7 +41,7 @@ const Settings = ({ handleLogout, user }: Props) => {
               ]}
             >
               <Text style={[styles.profileImageText, { color: colors.card }]}>
-                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                {user?.userName?.charAt(0)?.toUpperCase() || "U"}
               </Text>
             </View>
           )}
@@ -44,9 +49,10 @@ const Settings = ({ handleLogout, user }: Props) => {
             style={[styles.onlineIndicator, { backgroundColor: colors.accent }]}
           />
         </View>
+
         <View style={styles.profileInfo}>
           <Text style={[styles.profileName, { color: colors.textPrimary }]}>
-            {user?.name || "User"}
+            {user?.userName || "User"}
           </Text>
           <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
             {user?.email || "user@example.com"}
@@ -56,17 +62,22 @@ const Settings = ({ handleLogout, user }: Props) => {
               style={[styles.statusDot, { backgroundColor: colors.accent }]}
             />
             <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-              Online
+              {t("settings.online", "Online")}
             </Text>
           </View>
         </View>
       </View>
-      <View style={{ padding: 16, gap: 18, width: "100%" }}>
-        <View style={{ gap: 10 }}>
-          <Text style={{ color: colors.textSecondary, marginBottom: 8 }}>
-            {"Theme"}
+
+      {/* Settings Options */}
+      <View style={localStyles.sectionWrapper}>
+        {/* Theme Section */}
+        <View style={localStyles.section}>
+          <Text
+            style={[localStyles.sectionLabel, { color: colors.textSecondary }]}
+          >
+            {t("settings.theme", "Theme")}
           </Text>
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={localStyles.row}>
             <SettingChip
               label="Light"
               onPress={() => setThemeMode("light")}
@@ -85,11 +96,14 @@ const Settings = ({ handleLogout, user }: Props) => {
           </View>
         </View>
 
-        <View style={{ gap: 10 }}>
-          <Text style={{ color: colors.textSecondary, marginBottom: 8 }}>
-            {"Language"}
+        {/* Language Section */}
+        <View style={localStyles.section}>
+          <Text
+            style={[localStyles.sectionLabel, { color: colors.textSecondary }]}
+          >
+            {t("settings.language", "Language")}
           </Text>
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={localStyles.row}>
             <SettingChip
               label="English"
               onPress={() => i18n.changeLanguage("en")}
@@ -103,19 +117,16 @@ const Settings = ({ handleLogout, user }: Props) => {
           </View>
         </View>
 
+        {/* Logout Button */}
         <Pressable
           onPress={handleLogout}
-          style={({ pressed }) => ({
-            marginTop: 8,
-            backgroundColor: "#EF4444",
-            paddingVertical: 12,
-            borderRadius: 10,
-            alignItems: "center",
-            opacity: pressed ? 0.85 : 1,
-          })}
+          style={({ pressed }) => [
+            localStyles.logoutButton,
+            { opacity: pressed ? 0.85 : 1 },
+          ]}
         >
-          <Text style={{ color: "white", fontWeight: "700" }}>
-            {t("settings.logout")}
+          <Text style={localStyles.logoutText}>
+            {t("settings.logout", "Logout")}
           </Text>
         </Pressable>
       </View>
@@ -125,19 +136,20 @@ const Settings = ({ handleLogout, user }: Props) => {
 
 export default Settings;
 
+/* -------------------- Setting Chip -------------------- */
 type ChipProps = { label: string; onPress: () => void; active?: boolean };
 const SettingChip = ({ label, onPress, active }: ChipProps) => {
   const { colors } = useThemeContext();
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => ({
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderRadius: 999,
-        backgroundColor: active ? colors.accent : colors.surface,
-        opacity: pressed ? 0.9 : 1,
-      })}
+      style={({ pressed }) => [
+        localStyles.chip,
+        {
+          backgroundColor: active ? colors.accent : colors.surface,
+          opacity: pressed ? 0.9 : 1,
+        },
+      ]}
     >
       <Text style={{ color: active ? "white" : colors.textPrimary }}>
         {label}
@@ -145,3 +157,39 @@ const SettingChip = ({ label, onPress, active }: ChipProps) => {
     </Pressable>
   );
 };
+
+/* -------------------- Local Styles -------------------- */
+const localStyles = StyleSheet.create({
+  sectionWrapper: {
+    padding: 16,
+    gap: 18,
+    width: "100%",
+  },
+  section: {
+    gap: 10,
+  },
+  sectionLabel: {
+    marginBottom: 8,
+    fontWeight: "600",
+  },
+  row: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  chip: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+  },
+  logoutButton: {
+    marginTop: 8,
+    backgroundColor: "#EF4444",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  logoutText: {
+    color: "white",
+    fontWeight: "700",
+  },
+});

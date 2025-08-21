@@ -71,9 +71,6 @@ const Component = (props: Props) => {
   //   await batch.commit();
   // };
 
-  console.log("incomin request", incomingRequests);
-  console.log("outgoingRequests request", outgoingRequests);
-
   const acceptRequest = async (fromUserId: string) => {
     const auth = getAuth();
     const toUserId = auth.currentUser?.uid;
@@ -114,7 +111,6 @@ const Component = (props: Props) => {
       }),
     });
 
-    // Create chat doc
     const chatId =
       fromUserId < toUserId
         ? `${fromUserId}_${toUserId}`

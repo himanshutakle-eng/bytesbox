@@ -1,8 +1,7 @@
-import { Colors } from "@/constants/Colors";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { usePresence } from "@/hooks/usePresence";
 import { Message } from "@/Types";
-import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -24,6 +23,7 @@ type Props = {
 
 const ChatView = ({ otherUser }: Props) => {
   const { colors } = useThemeContext();
+  const { user } = useAuthContext();
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
@@ -68,10 +68,16 @@ const ChatView = ({ otherUser }: Props) => {
             </View>
           )}
           <View>
-            <Text style={{ fontWeight: "700" }}>
+            <Text style={{ fontWeight: "700", color: colors.textPrimary }}>
               {otherUser?.userName || otherUser?.email || ""}
             </Text>
-            <Text style={{ fontSize: 11, opacity: 0.75 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                opacity: 0.75,
+                color: colors.textSecondary,
+              }}
+            >
               {otherUser?.status === "online"
                 ? t("chat.online")
                 : t("chat.last_seen", {
@@ -103,14 +109,14 @@ const ChatView = ({ otherUser }: Props) => {
   }, [chatId]);
 
   const send = async () => {
-    if (!text.trim() || !chatId) return;
+    if (!text.trim() || !chatId || !user?.uid) return;
     await firestore()
       .collection("chats")
       .doc(String(chatId))
       .collection("messages")
       .add({
         text: text.trim(),
-        senderId: auth().currentUser?.uid,
+        senderId: user.uid,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
     // update chat summary
@@ -142,18 +148,14 @@ const ChatView = ({ otherUser }: Props) => {
               paddingVertical: 6,
               flexDirection: "row",
               justifyContent:
-                item.senderId === auth().currentUser?.uid
-                  ? "flex-end"
-                  : "flex-start",
+                item.senderId === user?.uid ? "flex-end" : "flex-start",
             }}
           >
             <View
               style={{
                 maxWidth: "80%",
                 backgroundColor:
-                  item.senderId === auth().currentUser?.uid
-                    ? colors.accent
-                    : colors.card,
+                  item.senderId === user?.uid ? colors.accent : colors.card,
                 padding: 10,
                 borderRadius: 12,
               }}
@@ -161,9 +163,7 @@ const ChatView = ({ otherUser }: Props) => {
               <Text
                 style={{
                   color:
-                    item.senderId === auth().currentUser?.uid
-                      ? "white"
-                      : colors.textPrimary,
+                    item.senderId === user?.uid ? "white" : colors.textPrimary,
                 }}
               >
                 {item.text}
@@ -174,7 +174,7 @@ const ChatView = ({ otherUser }: Props) => {
                     marginTop: 4,
                     fontSize: 10,
                     color:
-                      item.senderId === auth().currentUser?.uid
+                      item.senderId === user?.uid
                         ? "#E6E6E6"
                         : colors.textSecondary,
                     textAlign: "right",
@@ -187,15 +187,18 @@ const ChatView = ({ otherUser }: Props) => {
           </View>
         )}
       />
-      <View style={[styles.inputBar, { borderTopColor: Colors.light.border }]}>
+      <View style={[styles.inputBar, { borderTopColor: colors.border }]}>
         <TextInput
           value={text}
           onChangeText={setText}
           placeholder={t("chat.type")}
+          placeholderTextColor={colors.textSecondary}
           style={{
             flex: 1,
             borderWidth: 1,
-            borderColor: Colors.light.border,
+            borderColor: colors.border,
+            backgroundColor: colors.card,
+            color: colors.textPrimary,
             padding: 12,
             borderRadius: 8,
           }}

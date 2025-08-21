@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider, useThemeContext } from "@/contexts/ThemeContexts";
 import "@/i18n";
 import {
@@ -20,9 +21,11 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <InnerLayout />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <InnerLayout />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
