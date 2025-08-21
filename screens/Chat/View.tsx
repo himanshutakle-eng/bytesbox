@@ -1,3 +1,4 @@
+import CustomLoader from "@/components/ui/CustomLoader";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { usePresence } from "@/hooks/usePresence";
@@ -19,9 +20,10 @@ import styles from "./Styles";
 
 type Props = {
   otherUser?: any | null;
+  loading?: boolean;
 };
 
-const ChatView = ({ otherUser }: Props) => {
+const ChatView = ({ otherUser, loading }: Props) => {
   const { colors } = useThemeContext();
   const { user } = useAuthContext();
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -41,7 +43,6 @@ const ChatView = ({ otherUser }: Props) => {
 
   usePresence();
 
-  // Configure header with avatar, name, and presence
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
@@ -134,6 +135,12 @@ const ChatView = ({ otherUser }: Props) => {
       );
     setText("");
   };
+
+  if (loading) {
+    return (
+      <CustomLoader message="Please wait while we are loading the chats" />
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

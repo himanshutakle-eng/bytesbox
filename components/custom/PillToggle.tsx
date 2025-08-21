@@ -17,7 +17,7 @@ const PillToggle = ({ options, value, onChange }: Props) => {
       style={{
         flexDirection: "row",
         backgroundColor: colors.surface,
-        padding: 4,
+        padding: 15,
         borderRadius: 999,
         alignSelf: "center",
         marginVertical: 12,

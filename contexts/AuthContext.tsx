@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserData = async (uid: string) => {
     try {
       const userDoc = await firestore().collection("users").doc(uid).get();
-      if (userDoc.exists) {
+      if (userDoc?.exists) {
         const data = userDoc.data() as any;
         setUserData({ id: userDoc.id, ...data } as User);
       }
