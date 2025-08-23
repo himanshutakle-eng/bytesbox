@@ -4,7 +4,8 @@ import { useThemeContext } from "@/contexts/ThemeContexts";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { usePresence } from "@/hooks/usePresence";
 import { Message } from "@/Types";
-import { height } from "@/utils/Mixings";
+import { height, width } from "@/utils/Mixings";
+import { lightenColor } from "@/utils/Shade";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -21,9 +22,11 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
+  Pressable,
   Text,
   TextInput,
   TouchableOpacity,
@@ -148,7 +151,6 @@ const ChatView = ({ otherUser, loading }: Props) => {
     return () => unsubscribe();
   }, [chatId]);
 
-  // Audio setup
   useEffect(() => {
     const setupAudio = async () => {
       await Audio.requestPermissionsAsync();
@@ -248,7 +250,7 @@ const ChatView = ({ otherUser, loading }: Props) => {
         allowsEditing: false,
         quality: 1,
         videoQuality: 1,
-        videoMaxDuration: 300, // 5 minutes max
+        videoMaxDuration: 300,
         allowsMultipleSelection: false,
       });
 
@@ -336,16 +338,35 @@ const ChatView = ({ otherUser, loading }: Props) => {
     }
   };
 
+  const requestMicPermission = async () => {
+    const { status, canAskAgain } = await Audio.requestPermissionsAsync();
+
+    console.log("mic permission", status, canAskAgain);
+
+    if (status === "granted") {
+      return true;
+    }
+
+    if (canAskAgain) {
+      // Still can ask again → try again
+      const { status: retryStatus } = await Audio.requestPermissionsAsync();
+      return retryStatus === "granted";
+    } else {
+      // User permanently denied (or iOS after first deny)
+      Alert.alert(
+        "Permission required",
+        "Microphone permission is needed to record audio. Please enable it in settings."
+      );
+      return false;
+    }
+  };
+
   const startRecording = async () => {
     try {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission required",
-          "Please grant microphone permission to record audio."
-        );
-        return;
-      }
+      const granted = await requestMicPermission();
+
+      console.log("this is granted : ", granted);
+      if (!granted) return;
 
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
@@ -630,15 +651,15 @@ const ChatView = ({ otherUser, loading }: Props) => {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: isMyMessage
-            ? "rgba(255,255,255,0.2)"
-            : colors.background,
-          borderRadius: 20,
-          padding: 10,
+          backgroundColor: isMyMessage ? colors.tabActive : colors.background,
+          borderRadius: width(0.5),
+          padding: 12,
+          paddingVertical: 20,
           minWidth: 200,
+          justifyContent: "space-between",
         }}
       >
-        <TouchableOpacity onPress={playPauseAudio} style={{ marginRight: 10 }}>
+        <TouchableOpacity onPress={playPauseAudio} style={{}}>
           <FontAwesome
             name={isPlaying ? "pause" : "play"}
             size={16}
@@ -646,10 +667,10 @@ const ChatView = ({ otherUser, loading }: Props) => {
           />
         </TouchableOpacity>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, maxWidth: "55%", paddingTop: 3 }}>
           <View
             style={{
-              height: 2,
+              height: 1,
               backgroundColor: isMyMessage
                 ? "rgba(255,255,255,0.3)"
                 : colors.border,
@@ -666,17 +687,15 @@ const ChatView = ({ otherUser, loading }: Props) => {
               }}
             />
           </View>
-          <Text
-            style={{
-              fontSize: 10,
-              color: isMyMessage
-                ? "rgba(255,255,255,0.8)"
-                : colors.textSecondary,
-            }}
-          >
-            {formatDuration(position)} / {formatDuration(duration)}
-          </Text>
         </View>
+        <Text
+          style={{
+            fontSize: 10,
+            color: isMyMessage ? "rgba(255,255,255,0.8)" : colors.textSecondary,
+          }}
+        >
+          {formatDuration(position)} / {formatDuration(duration)}
+        </Text>
       </View>
     );
   };
@@ -697,15 +716,16 @@ const ChatView = ({ otherUser, loading }: Props) => {
     const hasMedia = !!(
       item.mediaUrl || (item as PendingMessage).localMediaUri
     );
-    const isOnlyMedia = hasMedia && !item.text; // no text, only media
+    const isOnlyMedia = hasMedia && !item.text;
 
     return (
-      <View
+      <Pressable
         style={{
           paddingHorizontal: 5,
           paddingVertical: 4,
           flexDirection: "row",
           justifyContent: isMyMessage ? "flex-end" : "flex-start",
+          marginVertical: width(0.005),
         }}
       >
         <View
@@ -723,7 +743,10 @@ const ChatView = ({ otherUser, loading }: Props) => {
         >
           {(item.mediaUrl || (item as PendingMessage).localMediaUri) && (
             <View
-              style={{ marginBottom: item.text ? 8 : 0, position: "relative" }}
+              style={{
+                marginBottom: item.text ? 8 : 0,
+                position: "relative",
+              }}
             >
               {isAudio ? (
                 <AudioPlayer
@@ -731,34 +754,50 @@ const ChatView = ({ otherUser, loading }: Props) => {
                   isMyMessage={isMyMessage}
                 />
               ) : isVideo ? (
-                <Video
-                  source={{
-                    uri:
-                      item.mediaUrl || (item as PendingMessage).localMediaUri,
-                  }}
+                <View
                   style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 8,
+                    padding: width(0.01),
+                    backgroundColor: lightenColor(colors.tabActive, 50),
+                    borderRadius: width(0.03),
                   }}
-                  useNativeControls
-                  resizeMode="contain"
-                  shouldPlay={false}
-                  isLooping={false}
-                />
+                >
+                  <Video
+                    source={{
+                      uri:
+                        item.mediaUrl || (item as PendingMessage).localMediaUri,
+                    }}
+                    style={{
+                      width: 200,
+                      height: 200,
+                      borderRadius: 8,
+                    }}
+                    useNativeControls
+                    resizeMode="cover"
+                    shouldPlay={false}
+                    isLooping={false}
+                  />
+                </View>
               ) : (
-                <Image
-                  source={{
-                    uri:
-                      item.mediaUrl || (item as PendingMessage).localMediaUri,
-                  }}
+                <View
                   style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 8,
-                    resizeMode: "cover",
+                    padding: width(0.01),
+                    backgroundColor: lightenColor(colors.tabActive, 50),
+                    borderRadius: width(0.03),
                   }}
-                />
+                >
+                  <Image
+                    source={{
+                      uri:
+                        item.mediaUrl || (item as PendingMessage).localMediaUri,
+                    }}
+                    style={{
+                      width: 200,
+                      height: 200,
+                      borderRadius: 8,
+                      resizeMode: "cover",
+                    }}
+                  />
+                </View>
               )}
 
               {isVideo && item.mediaUrl && !isUploading && (
@@ -850,7 +889,7 @@ const ChatView = ({ otherUser, loading }: Props) => {
             </Text>
           )}
         </View>
-      </View>
+      </Pressable>
     );
   };
 
@@ -989,7 +1028,7 @@ const ChatView = ({ otherUser, loading }: Props) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
       <FlatList
         inverted
         data={allMessages}
@@ -1009,7 +1048,7 @@ const ChatView = ({ otherUser, loading }: Props) => {
           keyboardVisible
             ? Platform.OS === "ios"
               ? 90
-              : height(0.13)
+              : height(0.12)
             : height(0.03)
         }
       >
@@ -1069,7 +1108,10 @@ const ChatView = ({ otherUser, loading }: Props) => {
         ) : (
           <>
             <TouchableOpacity
-              onPress={() => setShowMediaOptions(true)}
+              onPress={() => {
+                Keyboard.dismiss();
+                setTimeout(() => setShowMediaOptions(true), 100);
+              }}
               style={styles.addButton}
             >
               <Entypo name="plus" size={18} color="#4F46E5" />
@@ -1080,42 +1122,41 @@ const ChatView = ({ otherUser, loading }: Props) => {
               onChangeText={setText}
               placeholder={t("chat.type")}
               placeholderTextColor={colors.textSecondary}
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor: colors.card,
-                color: colors.textPrimary,
-                padding: 12,
-                borderRadius: 8,
-                marginHorizontal: 8,
-              }}
+              style={[
+                styles.txtInputBar,
+                {
+                  borderColor: colors.border,
+                  backgroundColor: colors.card,
+                  color: colors.textPrimary,
+                },
+              ]}
               multiline
               maxLength={1000}
             />
+            <TouchableOpacity
+              onPress={startRecording}
+              style={{
+                padding: 10,
+                backgroundColor: colors.tabActive,
+                borderRadius: width(0.5),
+              }}
+            >
+              <MaterialIcons name="mic" size={18} color="white" />
+            </TouchableOpacity>
 
-            {text.trim() ? (
-              <TouchableOpacity
-                onPress={sendTextMessage}
-                style={[styles.sendButton, { opacity: !text.trim() ? 0.5 : 1 }]}
-                disabled={!text.trim()}
-              >
-                <Text style={styles.sendButtonText}>{t("chat.send")}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={startRecording}
-                style={{
-                  backgroundColor: colors.accent,
-                  borderRadius: 20,
-                  padding: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <MaterialIcons name="mic" size={20} color="white" />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={sendTextMessage}
+              style={[
+                styles.sendButton,
+                {
+                  opacity: !text.trim() ? 0.5 : 1,
+                  backgroundColor: colors.tabActive,
+                },
+              ]}
+              disabled={!text.trim()}
+            >
+              <Text style={styles.sendButtonText}>{t("chat.send")}</Text>
+            </TouchableOpacity>
           </>
         )}
       </KeyboardAvoidingView>

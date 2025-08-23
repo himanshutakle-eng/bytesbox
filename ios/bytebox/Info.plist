@@ -57,6 +57,12 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow bytebox to open the camera</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow bytebox to Record Audio</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow bytebox to access your photos</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

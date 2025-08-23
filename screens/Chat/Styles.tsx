@@ -1,3 +1,4 @@
+import { width } from "@/utils/Mixings";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -5,9 +6,11 @@ const styles = StyleSheet.create({
   messageRow: { padding: 10 },
   inputBar: {
     flexDirection: "row",
-    padding: 8,
-    gap: 8,
-    borderTopWidth: 1,
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: width(0.05),
+    marginBottom: width(0.03),
   },
   headerContainer: {
     flexDirection: "row",
@@ -50,12 +53,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   addButton: {
-    padding: 16,
+    padding: width(0.02),
     // paddingVertical: 10,
     backgroundColor: "white",
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
+  },
+  txtInputBar: {
+    width: width(0.6),
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 8,
+    // marginHorizontal: 8,
   },
 });
 
