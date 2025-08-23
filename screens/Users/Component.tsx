@@ -1,6 +1,7 @@
 import CustomLoader from "@/components/ui/CustomLoader";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { User } from "@/Types";
+import { getAuth } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
@@ -32,11 +33,15 @@ const Component = (props: Props) => {
         return;
       }
 
+      const currentUser = await getAuth().currentUser;
+
       const snapshot = await firestore().collection("users").get();
 
       const fetchedUsers: User[] = snapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() } as User))
-        .filter((user) => user.id !== user.uid);
+        .filter((user) => {
+          return user.id !== currentUser?.uid;
+        });
       setLoading(false);
       setUsers(fetchedUsers);
     } catch (error) {
@@ -46,47 +51,6 @@ const Component = (props: Props) => {
       setLoading(false);
     }
   };
-
-  // const sendRequest = async (toUserId: string) => {
-  //   setRequestLoading(true);
-  //   try {
-  //     const auth = getAuth();
-  //     const fromUserId = auth.currentUser?.uid;
-
-  //     if (!fromUserId || fromUserId === toUserId) return;
-
-  //     const batch = firestore().batch();
-
-  //     const fromRef = firestore().collection("users").doc(fromUserId);
-  //     const toRef = firestore().collection("users").doc(toUserId);
-
-  //     batch.update(fromRef, {
-  //       connections: firestore.FieldValue.arrayUnion({
-  //         uid: toUserId,
-  //         status: "pending",
-  //         direction: "outgoing",
-  //         fromUserId: fromUserId,
-  //       }),
-  //     });
-
-  //     batch.update(toRef, {
-  //       connections: firestore.FieldValue.arrayUnion({
-  //         uid: fromUserId,
-  //         status: "pending",
-  //         direction: "incoming",
-  //         toUserId: toUserId,
-  //       }),
-  //     });
-
-  //     await batch.commit();
-  //     setRequestLoading(false);
-  //   } catch (error) {
-  //     console.warn("this is error :", error);
-  //     setRequestLoading(false);
-  //   } finally {
-  //     setRequestLoading(false);
-  //   }
-  // };
 
   const sendRequest = async (toUserId: string) => {
     setRequestLoading(true);

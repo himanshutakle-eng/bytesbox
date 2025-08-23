@@ -62,6 +62,7 @@ const ChatView = ({ otherUser, loading }: Props) => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const recordingInterval = useRef<NodeJS.Timeout>();
+  const [selectedMessage, setSelectedMessage] = useState([]);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -700,6 +701,8 @@ const ChatView = ({ otherUser, loading }: Props) => {
     );
   };
 
+  console.log("this is messages selcted", selectedMessage);
+
   const renderMessage = ({
     item,
     isPending = false,
@@ -712,6 +715,8 @@ const ChatView = ({ otherUser, loading }: Props) => {
     const isUploading = isPending && (item as PendingMessage).isUploading;
     const isVideo = item.mediaType === "video";
     const isAudio = item.mediaType === "audio";
+
+    console.log("this is item", item);
 
     const hasMedia = !!(
       item.mediaUrl || (item as PendingMessage).localMediaUri
