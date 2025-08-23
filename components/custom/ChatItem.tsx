@@ -1,6 +1,8 @@
 import { Colors } from "@/constants/Colors";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
+import { lightenColor } from "@/utils/Shade";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +10,10 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
   item: any;
+  selectedChats: string[];
+  setSelectedChats: React.Dispatch<React.SetStateAction<string[]>>;
+  isSelectionMode: boolean;
+  setIsSelectionMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function formatTime(ts: any) {
@@ -19,7 +25,13 @@ function formatTime(ts: any) {
   }
 }
 
-const ChatItem = ({ item }: Props) => {
+const ChatItem = ({
+  item,
+  selectedChats,
+  setSelectedChats,
+  isSelectionMode,
+  setIsSelectionMode,
+}: Props) => {
   const { isDark, colors } = useThemeContext();
   const { t } = useTranslation();
 
@@ -35,100 +47,163 @@ const ChatItem = ({ item }: Props) => {
     item?.lastMessage?.createdAt || item?.createdAt
   );
 
-  return (
-    <Pressable
-      onPress={() =>
-        router.push({
-          pathname: "/chat/[chatId]",
-          params: { chatId: item.id },
-        })
+  const isSelected = selectedChats.includes(item.id);
+
+  const handlePress = () => {
+    if (isSelectionMode) {
+      handleToggleSelection();
+    } else {
+      router.push({
+        pathname: "/chat/[chatId]",
+        params: { chatId: item.id },
+      });
+    }
+  };
+
+  const handleLongPress = () => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedChats([item.id]);
+    } else {
+      handleToggleSelection();
+    }
+  };
+
+  const handleToggleSelection = () => {
+    setSelectedChats((prevSelected) => {
+      const newSelected = prevSelected.includes(item.id)
+        ? prevSelected.filter((id) => id !== item.id)
+        : [...prevSelected, item.id];
+
+      if (newSelected.length === 0) {
+        setIsSelectionMode(false);
       }
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.card,
-          borderBottomColor: colors.border,
-        },
-      ]}
+
+      return newSelected;
+    });
+  };
+
+  return (
+    <View
+      style={{
+        backgroundColor: isSelected
+          ? lightenColor(colors.tabActive, 50)
+          : colors.card,
+        marginBottom: width(0.01),
+      }}
     >
-      <View style={[styles.imgWrapper, { borderColor: colors.border }]}>
-        {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.img} />
-        ) : (
-          <View
-            style={[
-              styles.img,
-              styles.fallback,
-              { backgroundColor: colors.accent },
-            ]}
-          >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
-              {name?.[0]?.toUpperCase() || "?"}
-            </Text>
+      <Pressable
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        style={[
+          styles.container,
+          {
+            backgroundColor: isSelected
+              ? lightenColor(colors.tabActive, 50)
+              : colors.card,
+          },
+        ]}
+      >
+        <View style={[styles.imgWrapper, { borderColor: colors.border }]}>
+          {avatar ? (
+            <Image source={{ uri: avatar }} style={styles.img} />
+          ) : (
+            <View
+              style={[
+                styles.img,
+                styles.fallback,
+                { backgroundColor: colors.accent },
+              ]}
+            >
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
+              >
+                {name?.[0]?.toUpperCase() || "?"}
+              </Text>
+            </View>
+          )}
+        </View>
+        {isSelectionMode && (
+          <View style={styles.selectionOverlay}>
+            {isSelected && (
+              <View
+                style={[
+                  styles.selectionIndicator,
+                  {
+                    backgroundColor: isSelected
+                      ? colors.tabActive
+                      : colors.background,
+                    borderWidth: 0,
+                  },
+                ]}
+              >
+                <Ionicons name="checkmark" size={18} color="white" />
+              </View>
+            )}
           </View>
         )}
-      </View>
 
-      <View style={styles.nameContainer}>
-        <Text
-          style={{
-            color: colors.textPrimary,
-            fontWeight: "700",
-            fontSize: 16,
-            marginBottom: 4,
-          }}
-        >
-          {name}
-        </Text>
-        {lastMessage ? (
+        <View style={styles.nameContainer}>
+          <Text
+            style={{
+              color: colors.textPrimary,
+              fontWeight: "700",
+              fontSize: 16,
+              marginBottom: 4,
+            }}
+          >
+            {name}
+          </Text>
+          {lastMessage ? (
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 14,
+                lineHeight: 18,
+              }}
+              numberOfLines={1}
+            >
+              {lastMessage}
+            </Text>
+          ) : (
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 14,
+                fontStyle: "italic",
+              }}
+            >
+              {item?.otherUser?.status === "online"
+                ? t("chat.online")
+                : t("chat.offline")}
+            </Text>
+          )}
+        </View>
+
+        <View style={{ alignItems: "flex-end" }}>
           <Text
             style={{
               color: colors.textSecondary,
-              fontSize: 14,
-              lineHeight: 18,
-            }}
-            numberOfLines={1}
-          >
-            {lastMessage}
-          </Text>
-        ) : (
-          <Text
-            style={{
-              color: colors.textSecondary,
-              fontSize: 14,
-              fontStyle: "italic",
+              fontSize: 12,
+              fontWeight: "500",
+              marginBottom: 4,
             }}
           >
-            {item?.otherUser?.status === "online"
-              ? t("chat.online")
-              : t("chat.offline")}
+            {lastMessageTime}
           </Text>
-        )}
-      </View>
-
-      <View style={{ alignItems: "flex-end" }}>
-        <Text
-          style={{
-            color: colors.textSecondary,
-            fontSize: 12,
-            fontWeight: "500",
-            marginBottom: 4,
-          }}
-        >
-          {lastMessageTime}
-        </Text>
-        {item?.otherUser?.status === "online" && (
-          <View
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: "#4CAF50",
-            }}
-          />
-        )}
-      </View>
-    </Pressable>
+          {item?.otherUser?.status === "online" && !isSelectionMode && (
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: "#4CAF50",
+              }}
+            />
+          )}
+        </View>
+      </Pressable>
+    </View>
   );
 };
 
@@ -165,6 +240,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#E6E6E6",
+    position: "relative",
   },
   img: {
     height: "100%",
@@ -179,5 +255,19 @@ const styles = StyleSheet.create({
   nameContainer: {
     flex: 1,
     paddingLeft: width(0.02),
+  },
+  selectionOverlay: {
+    position: "absolute",
+    bottom: width(0.05),
+    left: width(0.14),
+    zIndex: 1,
+  },
+  selectionIndicator: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

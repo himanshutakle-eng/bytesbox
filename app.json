@@ -28,6 +28,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow bytebox to access your photos",
+          "cameraPermission": "Allow bytebox to open the camera",
+          "microphonePermission": false
+        }
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/messaging",
@@ -54,12 +62,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "i18nLocales": [
-        "en",
-        "hi",
-        "en",
-        "hi"
-      ],
+      "i18nLocales": ["en", "hi"],
       "router": {},
       "eas": {
         "projectId": "81a170c3-7cd4-4d6c-a8fa-e88af6ba8c7f"

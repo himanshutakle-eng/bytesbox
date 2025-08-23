@@ -49,6 +49,14 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "600",
   },
+  addButton: {
+    padding: 16,
+    // paddingVertical: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default styles;

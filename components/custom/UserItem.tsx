@@ -198,16 +198,7 @@ const UserItem = ({
               : t("users.request")}
           </Text>
         </TouchableOpacity>
-      ) : params === "Declined" ? (
-        <TouchableOpacity
-          style={[styles.btn, { backgroundColor: "blue" }]}
-          onPress={() =>
-            onRequestAgain && onRequestAgain(item?.uid || item?.user?.id)
-          }
-        >
-          <Text style={{ color: "white" }}>{t("users.request")}</Text>
-        </TouchableOpacity>
-      ) : (
+      ) : params === "Declined" || params === "Sent" ? null : (
         <View style={styles.row}>
           <TouchableOpacity
             style={[styles.btn, { backgroundColor: "green" }]}

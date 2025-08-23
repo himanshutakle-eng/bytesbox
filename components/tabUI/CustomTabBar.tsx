@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     position: "absolute",
-    bottom: width(0.1),
+    bottom: width(0.15),
     width: width(0.9),
     alignSelf: "center",
     borderRadius: width(0.5),
