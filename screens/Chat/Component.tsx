@@ -79,9 +79,6 @@ const Component = () => {
       .onSnapshot((snap) => {
         const list = snap.docs.map((d) => {
           const data = d.data() as any;
-          console.log("this is data : ", data);
-
-          console.log("this is data : ", data);
           if (data.text && isEncrypted(data.text)) {
             data.text = decryptMessage(data.text);
             data.isEncrypted = true;
@@ -91,8 +88,6 @@ const Component = () => {
             data.mediaUrl = decryptMediaUri(data?.mediaUrl);
             data.isEncrypted = true;
           }
-
-          console.log("thisi is media -----", data);
 
           return { id: d.id, ...data };
         }) as Message[];

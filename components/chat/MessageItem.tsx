@@ -1,7 +1,6 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { Message } from "@/Types";
-import { formatTime } from "@/utils/formateTime";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { useState } from "react";
 import {
@@ -39,6 +38,8 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
 }) => {
   const { colors } = useThemeContext();
   const { user } = useAuthContext();
+
+  console.log("item -----", item);
 
   // State for full-screen media viewer
   const [showFullScreenMedia, setShowFullScreenMedia] = useState(false);
@@ -82,7 +83,7 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
                 ? colors.accent
                 : colors.card,
               padding: isOnlyMedia ? 0 : 10,
-              borderRadius: isOnlyMedia ? 0 : 12,
+              borderRadius: isOnlyMedia ? 12 : 12,
               opacity: showError ? 0.6 : isUploading ? 0.8 : 1,
             },
           ]}
@@ -146,7 +147,7 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
               />
             )}
 
-          {item.createdAt && !isUploading && (
+          {/* {item.createdAt && !isUploading && (
             <Text
               style={[
                 styles.time,
@@ -155,7 +156,7 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
             >
               {formatTime(item.createdAt)}
             </Text>
-          )}
+          )} */}
         </View>
       </Pressable>
 

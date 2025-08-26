@@ -1,6 +1,6 @@
-import "react-native-get-random-values";
 import CryptoJS from "crypto-js";
 import { useCallback } from "react";
+import "react-native-get-random-values";
 
 const ENCRYPTION_KEY = "bytesBox_secret";
 
@@ -9,7 +9,14 @@ export function useMessageEncryption() {
     console.log("-----messages", message);
     try {
       if (!message || message.trim() === "") return message;
-      return CryptoJS.AES.encrypt(message, ENCRYPTION_KEY).toString();
+      const encryptedData = CryptoJS.AES.encrypt(
+        message,
+        ENCRYPTION_KEY
+      ).toString();
+
+      console.log("this is encryptedData", encryptedData);
+
+      return encryptedData;
     } catch (error) {
       console.error("Encryption error:", error);
       return message;

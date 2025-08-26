@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 4,
     flexDirection: "row",
-    marginVertical: width(0.005),
+    marginVertical: width(0.003),
   },
   msgSubItem: {
     maxWidth: "90%",

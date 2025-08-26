@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AudioPlayer from "../AudioPlayer";
 
 interface MediaContentProps {
   mediaUrl?: string;
@@ -29,8 +30,12 @@ export const MediaContent: React.FC<MediaContentProps> = ({
 }) => {
   const mediaUri = mediaUrl || localMediaUri;
 
-  if (!mediaUri || mediaType === "audio") {
+  if (!mediaUri) {
     return null;
+  }
+
+  if (mediaType === "audio") {
+    return <AudioPlayer uri={mediaUrl} />;
   }
 
   const handleMediaPress = () => {

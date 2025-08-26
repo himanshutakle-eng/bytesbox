@@ -249,7 +249,6 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
     ...messages,
   ];
 
-  // Render function that handles different message types
   const renderMessage = ({ item, index }: { item: any; index: number }) => {
     // Instant message
     if (item.isInstant) {
@@ -267,7 +266,6 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
       );
     }
 
-    // Regular or pending message
     return (
       <MessageItem
         item={item}
