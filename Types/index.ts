@@ -28,8 +28,8 @@ export type Chat = {
 
 export type Message = {
   id: string;
-  chatId: string;
-  text: string;
+  chatId?: string;
+  text?: string;
   senderId: string;
   createdAt: any;
 };

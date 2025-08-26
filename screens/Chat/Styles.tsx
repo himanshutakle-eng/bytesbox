@@ -67,6 +67,80 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     // marginHorizontal: 8,
   },
+  msgItem: {
+    paddingHorizontal: 5,
+    paddingVertical: 4,
+    flexDirection: "row",
+    marginVertical: width(0.005),
+  },
+  msgSubItem: {
+    maxWidth: "90%",
+  },
+  videoWrapper: {
+    padding: width(0.01),
+    borderRadius: width(0.03),
+  },
+  video: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+  },
+  imageWrapper: {
+    padding: width(0.01),
+
+    borderRadius: width(0.03),
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+    resizeMode: "cover",
+  },
+  videoText: {
+    position: "absolute",
+    bottom: 8,
+    right: 8,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  mediaTxt: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  msgTxt: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+  time: {
+    marginTop: 4,
+    fontSize: 10,
+    textAlign: "right",
+  },
+  btn: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  card: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  txt: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 20,
+    textAlign: "center",
+  },
 });
 
 export default styles;
