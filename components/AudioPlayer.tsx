@@ -3,13 +3,11 @@ import { height, width } from "@/utils/Mixings";
 import { lightenColor } from "@/utils/Shade";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Animated,
   Pressable,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -174,32 +172,27 @@ export default function AudioPlayer({ uri }: AudioPlayerProps) {
 
   return (
     <View style={styles.wrapper}>
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: lightenColor(colors.accent, 30) },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: colors.accent }]}>
         <Animated.View
           style={[
             styles.playButtonContainer,
             { transform: [{ scale: isPlaying ? pulseAnim : 1 }] },
           ]}
         >
-          <TouchableOpacity onPress={togglePlayback} activeOpacity={0.9}>
-            <LinearGradient
-              colors={[lightenColor(colors.accent, 50), "#8E2DE2"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.playButton}
-            >
-              <Ionicons
-                name={isPlaying ? "pause" : "play"}
-                size={26}
-                color="#fff"
-                style={isPlaying ? {} : { marginLeft: 2 }}
-              />
-            </LinearGradient>
+          <TouchableOpacity
+            onPress={togglePlayback}
+            activeOpacity={0.9}
+            style={[
+              styles.playButton,
+              { backgroundColor: lightenColor(colors.accent, 30) },
+            ]}
+          >
+            <Ionicons
+              name={isPlaying ? "pause" : "play"}
+              size={26}
+              color="#fff"
+              style={isPlaying ? {} : { marginLeft: 2 }}
+            />
           </TouchableOpacity>
         </Animated.View>
 
@@ -225,7 +218,7 @@ export default function AudioPlayer({ uri }: AudioPlayerProps) {
                         inputRange: [0, 1],
                         outputRange: [3, 24],
                       }),
-                      backgroundColor: isActive ? "#ffff" : "#ccc",
+                      backgroundColor: isActive ? "#ffff" : "#ffff",
                       opacity: isActive ? 1 : 0.4,
                     },
                   ]}
@@ -233,23 +226,7 @@ export default function AudioPlayer({ uri }: AudioPlayerProps) {
               );
             })}
           </View>
-          <View
-            style={[
-              styles.progressDot,
-              {
-                left: `${progress * 100}%`,
-                backgroundColor: colors.accent,
-                borderRadius: width(0.5),
-              },
-            ]}
-          />
         </Pressable>
-
-        <View style={styles.timeContainer}>
-          <Text style={[styles.timeText, { color: colors.text }]}>
-            {currentTime} / {totalTime}
-          </Text>
-        </View>
       </View>
     </View>
   );
@@ -276,15 +253,11 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   playButton: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: width(0.08),
+    height: width(0.08),
+    borderRadius: width(0.8),
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#FF0069",
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 8,
   },
   waveformContainer: {
     flex: 1,
@@ -299,7 +272,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   waveformBar: {
-    width: 1,
+    width: 2,
     borderRadius: 3,
     marginHorizontal: 1,
   },

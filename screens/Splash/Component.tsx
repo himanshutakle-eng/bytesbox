@@ -9,11 +9,15 @@ const Component = () => {
   useEffect(() => {
     if (loading) return;
 
+    let timer;
+
     if (user) {
-      router.replace("/(tabs)/chatlist");
+      timer = setTimeout(() => router.replace("/(tabs)/chatlist"), 3000);
     } else {
-      router.replace("/authentication");
+      timer = setTimeout(() => router.replace("/authentication"), 3000);
     }
+
+    return () => clearTimeout(timer);
   }, [user, loading]);
 
   return <Splash />;

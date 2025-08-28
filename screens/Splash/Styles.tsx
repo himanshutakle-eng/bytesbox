@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
   logoWrap: {
     alignItems: "center",
-    gap: 8,
+    gap: 5,
     marginBottom: 16,
   },
   brandTitle: {

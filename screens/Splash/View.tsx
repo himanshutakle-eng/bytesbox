@@ -1,8 +1,8 @@
-import { Colors } from "@/constants/Colors";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
+import { Image } from "expo-image";
 import React from "react";
-import { ActivityIndicator, Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./Styles";
 
@@ -16,11 +16,11 @@ const Splash = (props: Props) => {
     >
       <View style={styles.logoWrap}>
         <Image
-          source={require("@/assets/images/react-logo.png")}
+          source={require("@/assets/images/rename.gif")}
           style={{
-            width: width(0.25),
-            height: width(0.25),
-            resizeMode: "contain",
+            width: width(0.35),
+            height: width(0.35),
+            resizeMode: "cover",
           }}
         />
         <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>
@@ -30,7 +30,7 @@ const Splash = (props: Props) => {
           Fast, simple, private chat
         </Text>
       </View>
-      <ActivityIndicator size="small" color={Colors.light.tint} />
+      {/* <ActivityIndicator size="small" color={Colors.light.tint} /> */}
     </SafeAreaView>
   );
 };
