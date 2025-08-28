@@ -5,15 +5,17 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { usePresence } from "@/hooks/usePresence";
 import { height } from "@/utils/Mixings";
 import { useNavigation } from "expo-router";
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChatHeader } from "../../components/chat/ChatHeader";
+import { DateSeparator } from "../../components/chat/DateSeparator";
 import { InstantMessageItem } from "../../components/chat/InstantMessageItem";
 import { MediaOptionsModal } from "../../components/chat/MediaOptionsModal";
 import { MessageInput } from "../../components/chat/MessageInput";
 import { MessageItem } from "../../components/chat/MessageItem";
 import { RecordingBar } from "../../components/chat/RecordingBar";
+import { addDateSeparators } from "../../utils/addDateSeparators";
 import styles from "./Styles";
 
 interface ChatViewProps {
@@ -35,6 +37,9 @@ interface ChatViewProps {
   recordingDuration: any;
   text: any;
   setText: any;
+  replyingTo?: any;
+  onReply?: (message: any) => void;
+  onCancelReply?: () => void;
 }
 
 const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
@@ -54,8 +59,8 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
   messages,
   isRecording,
   recordingDuration,
-  text,
-  setText,
+  onReply,
+  onCancelReply,
 }) => {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
@@ -67,6 +72,26 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
     removeInstantMessage,
   } = useInstantMessage();
   usePresence();
+
+  const handleReply = (message: any) => {
+    setReplyingTo(message);
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+  };
+
+  const handleTapReply = (messageId: string) => {
+    setHighlightedMessageId(messageId);
+    // Clear highlight after 3 seconds
+    setTimeout(() => {
+      setHighlightedMessageId(null);
+    }, 3000);
+  };
+
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+  const [text, setText] = useState("");
+  const [replyingTo, setReplyingTo] = useState<any | null>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -110,7 +135,15 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
     ...messages,
   ];
 
+  // Add date separators to messages
+  const messagesWithDates = addDateSeparators(allMessages.reverse()).reverse();
+
   const renderMessage = ({ item, index }: { item: any; index: number }) => {
+    // Render date separator
+    if (item.type === "date") {
+      return <DateSeparator date={item.date} />;
+    }
+
     if (item.isInstant) {
       return (
         <InstantMessageItem
@@ -131,6 +164,8 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
         item={item}
         isPending={!!item.tempId && !item.isInstant}
         onRetryFailedMessage={retryFailedMessage}
+        onReply={() => onReply && onReply(item)}
+        isHighlighted={highlightedMessageId === item.id}
       />
     );
   };
@@ -145,7 +180,7 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <FlatList
         inverted
-        data={allMessages}
+        data={messagesWithDates}
         keyExtractor={(item) => item.tempId || item.id}
         renderItem={renderMessage}
         removeClippedSubviews={true}
@@ -177,6 +212,9 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
             onSend={handleSendMessage}
             onStartRecording={startRecording}
             onShowMediaOptions={() => setShowMediaOptions(true)}
+            replyingTo={replyingTo}
+            onCancelReply={onCancelReply}
+            onTapReply={handleTapReply}
           />
         )}
       </KeyboardAvoidingView>

@@ -34,4 +34,12 @@ export type Message = {
   createdAt: any;
   mediaUrl?: string;
   mediaType?: string;
+  replyTo?: {
+    id: string;
+    text?: string;
+    mediaUrl?: string;
+    mediaType?: string;
+    senderId: string;
+    senderName?: string;
+  };
 };

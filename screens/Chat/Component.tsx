@@ -35,6 +35,7 @@ const Component = () => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [text, setText] = useState("");
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const recordingInterval = useRef<any>(null);
 
   const {
@@ -270,6 +271,9 @@ const Component = () => {
     console.log("-------encrypted :", encrypted);
 
     setText("");
+    const replyData = replyingTo;
+    setReplyingTo(null);
+    
     setPendingMessages((prev) => [
       {
         id: tempId,
@@ -278,21 +282,42 @@ const Component = () => {
         senderId: user.uid,
         createdAt: new Date(),
         isUploading: true,
+        replyTo: replyData ? {
+          id: replyData.id,
+          text: replyData.text,
+          mediaUrl: replyData.mediaUrl,
+          mediaType: replyData.mediaType,
+          senderId: replyData.senderId,
+          senderName: replyData.senderId === user.uid ? "You" : otherUser?.userName || "Unknown"
+        } : undefined,
       },
       ...prev,
     ]);
 
     try {
+      const messageData: any = {
+        text: encrypted,
+        senderId: user.uid,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        isEncrypted: true,
+      };
+      
+      if (replyData) {
+        messageData.replyTo = {
+          id: replyData.id,
+          text: replyData.text,
+          mediaUrl: replyData.mediaUrl,
+          mediaType: replyData.mediaType,
+          senderId: replyData.senderId,
+          senderName: replyData.senderId === user.uid ? "You" : otherUser?.userName || "Unknown"
+        };
+      }
+      
       await firestore()
         .collection("chats")
         .doc(chatId)
         .collection("messages")
-        .add({
-          text: encrypted,
-          senderId: user.uid,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          isEncrypted: true,
-        });
+        .add(messageData);
       await firestore()
         .collection("chats")
         .doc(chatId)
@@ -330,6 +355,14 @@ const Component = () => {
       : failed.text && setText(failed.text);
   };
 
+  const handleReply = (message: Message) => {
+    setReplyingTo(message);
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+  };
+
   return (
     <ChatView
       otherUser={otherUser}
@@ -350,6 +383,9 @@ const Component = () => {
       recordingDuration={recordingDuration}
       text={text}
       setText={setText}
+      replyingTo={replyingTo}
+      onReply={handleReply}
+      onCancelReply={cancelReply}
     />
   );
 };
