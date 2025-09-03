@@ -40,7 +40,6 @@ const Component = (props: Props) => {
         })
       );
 
-      // Hydrate lastMessage for preview
       const withLast = await Promise.all(
         items.map(async (it: any) => {
           if (it.lastMessage) return it;

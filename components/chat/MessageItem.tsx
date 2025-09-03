@@ -1,6 +1,7 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { Message } from "@/Types";
+import { width } from "@/utils/Mixings";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
@@ -109,11 +110,9 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
     }
   }, [isHighlighted]);
 
-  // Swipe threshold
   const SWIPE_THRESHOLD = 60;
   const MAX_SWIPE = 100;
 
-  // PanResponder for swipe gestures
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (evt, gestureState) => {
       // Only respond to horizontal swipes
@@ -122,7 +121,6 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
     },
     onMoveShouldSetPanResponderCapture: () => false,
     onPanResponderGrant: () => {
-      // Start of gesture
       translateX.setOffset(0);
     },
     onPanResponderMove: (evt, gestureState) => {
@@ -277,6 +275,7 @@ export const MessageItem: React.FC<MessageItemProps | any> = ({
                 padding: isOnlyMedia ? 0 : hasReply ? 8 : 10,
                 borderRadius: isOnlyMedia ? 12 : 12,
                 opacity: showError ? 0.6 : isUploading ? 0.8 : 1,
+                paddingHorizontal: isOnlyMedia ? 0 : width(0.03),
               },
             ]}
           >

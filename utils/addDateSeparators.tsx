@@ -37,3 +37,8 @@ export function addDateSeparators(messages: any[]) {
 
   return result;
 }
+
+export function capitalizeFirstChar(str: string) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

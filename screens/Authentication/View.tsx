@@ -1,8 +1,8 @@
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
-import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, Text, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./Styles";
 
@@ -19,10 +19,10 @@ const Authentication = ({ onPress, isLoading }: Props) => {
     >
       <View style={styles.headerWrap}>
         <Image
-          source={require("@/assets/images/react-logo.png")}
+          source={require("@/assets/images/rename.gif")}
           style={{
-            width: width(0.2),
-            height: width(0.2),
+            width: width(0.35),
+            height: width(0.35),
             resizeMode: "contain",
           }}
         />
@@ -33,12 +33,26 @@ const Authentication = ({ onPress, isLoading }: Props) => {
           Sign in to continue
         </Text>
       </View>
-      <GoogleSigninButton
+      {/* <GoogleSigninButton
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
         onPress={onPress}
         disabled={isLoading}
-      />
+      /> */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onPress}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#000" />
+        ) : (
+          <Image
+            source={require("../../assets/images/Google__G__logo.svg")}
+            style={styles.icon}
+          />
+        )}
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

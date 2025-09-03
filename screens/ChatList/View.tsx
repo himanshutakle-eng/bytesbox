@@ -44,7 +44,7 @@ const ChatList = ({ data, loading, onRefresh, refreshing = false }: Props) => {
                 setSelectedChats([]);
               }}
             >
-              <Octicons name="trash" size={24} color="black" />
+              <Octicons name="trash" size={24} color={colors.text} />
             </TouchableOpacity>
           );
         }
@@ -56,7 +56,7 @@ const ChatList = ({ data, loading, onRefresh, refreshing = false }: Props) => {
               router.push({ pathname: "/users", params: { user: "user" } })
             }
           >
-            <Feather name="plus-circle" size={24} color="black" />
+            <Feather name="plus-circle" size={24} color={colors.text} />
           </TouchableOpacity>
         );
       },
@@ -78,7 +78,7 @@ const ChatList = ({ data, loading, onRefresh, refreshing = false }: Props) => {
   return (
     <SafeAreaView
       edges={["left", "right", "bottom"]}
-      style={{ display: "flex", flex: 1, backgroundColor: "white" }}
+      style={{ display: "flex", flex: 1, backgroundColor: colors.background }}
     >
       <FlatList
         data={data}

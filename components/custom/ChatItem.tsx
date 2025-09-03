@@ -1,4 +1,3 @@
-import { Colors } from "@/constants/Colors";
 import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
 import { lightenColor } from "@/utils/Shade";
@@ -86,9 +85,7 @@ const ChatItem = ({
   return (
     <View
       style={{
-        backgroundColor: isSelected
-          ? lightenColor(colors.tabActive, 50)
-          : colors.card,
+       
         marginBottom: width(0.01),
       }}
     >
@@ -216,7 +213,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: Colors.light.border,
     gap: 16,
     marginHorizontal: 16,
     marginVertical: 4,

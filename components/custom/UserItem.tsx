@@ -127,6 +127,7 @@
 // });
 
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useThemeContext } from "@/contexts/ThemeContexts";
 import { width } from "@/utils/Mixings";
 import Entypo from "@expo/vector-icons/Entypo";
 import React from "react";
@@ -154,6 +155,7 @@ const UserItem = ({
   const { t } = useTranslation();
   const { user } = useAuthContext();
   const currentUid = user?.uid;
+  const {colors} = useThemeContext()
 
   const existingRequest = item?.connections?.find(
     (conn: any) => conn.uid === currentUid || conn.uid === item.id
@@ -170,7 +172,7 @@ const UserItem = ({
   };
 
   return (
-    <View key={item?.id} style={styles.container}>
+    <View key={item?.id} style={[styles.container, {backgroundColor:colors.background}]}>
       <View style={[styles.container, { paddingHorizontal: 0 }]}>
         <View style={styles.imgWrapper}>
           <Image
@@ -179,8 +181,8 @@ const UserItem = ({
           />
         </View>
         <View style={styles.nameContainer}>
-          <Text>{item?.user?.userName || item?.userName}</Text>
-          <Text>{item?.user?.email || item?.email}</Text>
+          <Text style={{color:colors.text}}>{item?.user?.userName || item?.userName}</Text>
+          <Text style={{color:colors.text}}>{item?.user?.email || item?.email}</Text>
         </View>
       </View>
 

@@ -18,6 +18,23 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 13,
   },
+  button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+  },
 });
 
 export default styles;

@@ -10,9 +10,9 @@ type Props = {
 const CustomLoader = ({ message }: Props) => {
   const { colors } = useThemeContext();
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={[styles.screen,{backgroundColor:colors.background}]}>
       <ActivityIndicator color={colors.tabActive} size={"large"} />
-      <Text>{message}...</Text>
+      <Text style={{color:colors.text}}>{message}...</Text>
     </SafeAreaView>
   );
 };

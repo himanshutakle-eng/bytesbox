@@ -36,7 +36,7 @@ const Request = ({
   // }
 
   return (
-    <View>
+    <View style={{display:'flex', flex:1, backgroundColor:colors.background}}>
       <PillToggle
         options={[
           { key: "Received", label: t("request.received") },
@@ -60,7 +60,7 @@ const Request = ({
         )}
         ListEmptyComponent={
           <View style={styles.screen}>
-            <Text>{t("request.empty")}</Text>
+            <Text style={{color:colors.text}}>{t("request.empty")}</Text>
           </View>
         }
         contentContainerStyle={{

@@ -89,7 +89,9 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
     }, 3000);
   };
 
-  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+  const [highlightedMessageId, setHighlightedMessageId] = useState<
+    string | null
+  >(null);
   const [text, setText] = useState("");
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
 
@@ -177,7 +179,7 @@ const ChatViewWithInstantMessages: React.FC<ChatViewProps> = ({
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["bottom"]}>
+    <SafeAreaView style={[styles.container, {backgroundColor:colors.background}]} edges={["bottom"]}>
       <FlatList
         inverted
         data={messagesWithDates}
